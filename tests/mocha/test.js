@@ -76,6 +76,19 @@ describe('Mocha smoke test', () => {
         expect(errorVal).toBe(42)
     })
 
+    it('should allow to chain custom commands', async () => {
+        await browser.isExistingScenario()
+        browser.addCommand(
+            'foo',
+            function () {
+                return Promise.resolve('foo').then((r) => `${r}_${this.selector}_bar`)
+            },
+            true
+        )
+        expect(typeof browser.foo).toBe('undefined')
+        expect(await browser.$('body').$('.selector-1').foo()).toBe('foo_.selector-1_bar')
+    })
+
     it('should allow chaining of custom$', async () => {
         browser.addLocatorStrategy('someSelector', () => global.document.body)
         await browser.customSelectorScenario()
